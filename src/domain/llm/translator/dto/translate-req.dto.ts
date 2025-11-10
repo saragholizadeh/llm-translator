@@ -3,7 +3,6 @@ import { SupportedLanguages, TRSNSALTOR_PROVIDERS } from 'src/common/constants';
 import { z } from 'zod';
 import { ApiProperty } from '@nestjs/swagger';
 
-// 1️⃣ Zod Schema
 export const TranslateReqSchema = z.object({
   prompt_text: z.string().min(1, { message: 'Prompt text is required' }),
   sourceLanguage: z.enum(SupportedLanguages),
