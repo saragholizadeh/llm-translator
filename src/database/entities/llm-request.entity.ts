@@ -9,7 +9,13 @@ import {
 } from '@mikro-orm/core';
 import { randomUUID } from 'crypto';
 import { LLMResponse } from './llm-response.entity';
-import * as constants from '../../common/constants';
+
+enum ReqAndResStatus {
+  PENDING = 0,
+  IN_PROGRESS = 1,
+  COMPLETED = 2,
+  FAILED = 3,
+}
 
 @Entity()
 export class LLMRequest {
@@ -23,10 +29,13 @@ export class LLMRequest {
   sourceLanguage!: string;
 
   @Property()
-  defaultTargetLanguage: string = constants.SupportedLanguages.EN;
+  defaultTargetLanguage: string = 'en';
 
-  @Enum(() => constants.ReqAndResStatus)
-  responseStatus: constants.ReqAndResStatus;
+  @Enum(() => ReqAndResStatus)
+  responseStatus: ReqAndResStatus;
+
+  @Enum(() => ReqAndResStatus)
+  backgroundTaskStatus?: ReqAndResStatus;
 
   @Property({ onCreate: () => new Date() })
   createdAt = new Date();

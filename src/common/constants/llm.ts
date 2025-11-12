@@ -6,3 +6,5 @@ export enum ReqAndResStatus {
   COMPLETED = 'completed',
   FAILED = 'failed',
 }
+
+export type LLMProviders = 'openai' | 'gemini'; // This could come from a config file or database.

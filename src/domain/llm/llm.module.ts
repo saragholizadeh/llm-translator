@@ -1,7 +1,9 @@
 import { Module } from '@nestjs/common';
-import { TranslatorModule } from './translator/translator.module';
+import { LLMController } from './llm.controlller';
+import { LLMService } from './llm.service';
 
 @Module({
-  imports: [TranslatorModule],
+  controllers: [LLMController],
+  providers: [LLMService],
 })
 export class LlmModule {}
