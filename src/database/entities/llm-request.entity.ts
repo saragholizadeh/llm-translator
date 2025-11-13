@@ -28,14 +28,11 @@ export class LLMRequest {
   @Property()
   sourceLanguage!: string;
 
-  @Property()
-  defaultTargetLanguage: string = 'en';
+  @Enum(() => ReqAndResStatus)
+  responseStatus!: ReqAndResStatus;
 
   @Enum(() => ReqAndResStatus)
-  responseStatus: ReqAndResStatus;
-
-  @Enum(() => ReqAndResStatus)
-  backgroundTaskStatus?: ReqAndResStatus;
+  backgroundTaskStatus!: ReqAndResStatus;
 
   @Property({ onCreate: () => new Date() })
   createdAt = new Date();
