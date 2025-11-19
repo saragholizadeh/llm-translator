@@ -28,9 +28,9 @@ export class LLMRepository {
     return request;
   }
 
-  // async findRequestWithResponses(id: string): Promise<LLMRequest | null> {
-  //   return this.requestRepo.findOne(id, { populate: ['responses'] });
-  // }
+  async findRequestWithResponses(id: string): Promise<LLMRequest | null> {
+    return this.requestRepo.findOne(id, { populate: ['responses'] });
+  }
 
   async createResponse(request: LLMRequest, language: string, result?: string) {
     const response = new LLMResponse();

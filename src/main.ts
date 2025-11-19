@@ -7,6 +7,6 @@ async function bootstrap() {
 
   SwaggerService.setup(app);
 
-  await app.listen(3000);
+  await app.listen(6000);
 }
 bootstrap();

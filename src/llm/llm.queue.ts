@@ -9,8 +9,7 @@ import IORedis from 'ioredis';
 import { LLMRepository } from './llm.repository';
 import { LLMFactory } from './llm-factory';
 import { LLMProvider } from './providers/base-llm.provider';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import * as cacheManager_1 from 'cache-manager';
+import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager';
 
 @Injectable()
 export class TranslationQueue implements OnModuleInit, OnModuleDestroy {
@@ -20,9 +19,13 @@ export class TranslationQueue implements OnModuleInit, OnModuleDestroy {
 
   constructor(
     private readonly llmRepo: LLMRepository,
-    @Inject(CACHE_MANAGER) private readonly cacheManager: cacheManager_1.Cache,
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
   ) {
-    this.redis = new IORedis(process.env.REDIS_URL);
+    this.redis = new IORedis({
+      host: 'redis',
+      port: 6379,
+      maxRetriesPerRequest: null,
+    });
     this.queue = new Queue('translationQueue', { connection: this.redis });
   }
 
@@ -58,11 +61,11 @@ export class TranslationQueue implements OnModuleInit, OnModuleDestroy {
         await this.llmRepo.createResponse(request, targetLanguage, translated);
 
         const cacheKey = `llm:${requestId}:${targetLanguage}`;
-        await this.cacheManager.set(cacheKey, translated, { ttl: 3600 });
+        await this.cacheManager.set(cacheKey, translated, 3600);
 
         const allDone = request.responses.getItems().every((r) => r.result);
         if (allDone) {
-          await this.llmRepo.updateBackgroundStatus(requestId, 2); // COMPLETED
+          // await this.llmRepo.updateBackgroundStatus(requestId, 2);
         }
       },
       { connection: this.redis },

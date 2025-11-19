@@ -1,9 +1,13 @@
-version: '3.9'
-
 services:
+  redis:
+    image: redis:7
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+
   postgres:
     image: postgres:15
-    container_name: llm_translator_db
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -27,12 +31,24 @@ services:
       DB_USER: postgres
       DB_PASSWORD: postgres
       DB_NAME: llm_translator
+      NODE_ENV: production
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
     ports:
       - '3000:3000'
     depends_on:
       postgres:
         condition: service_healthy
-    command: sh -c "npm run mikro-orm migration:up && npm run start:prod"
+      redis:
+        condition: service_started
+    command: sh -c "
+      echo 'Waiting for DB...';
+      sleep 5;
+      echo 'Running migrations...';
+      npx mikro-orm migration:up --config dist/mikro-orm.config.js;
+      echo 'Starting app...';
+      node dist/src/main.js"
 
 volumes:
   postgres_data:
+  redis_data:
